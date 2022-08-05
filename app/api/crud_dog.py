@@ -72,3 +72,10 @@ def delete_by_name(db: Session, name: str):
         db.commit()
         return 0
     
+def send_file(file: bytes):
+    url = 'https://gttb.guane.dev/api/files'
+    myobj = {'Content-Type': 'multipart/form-data','accept': 'application/json'}
+    myfile={'file':file}
+    res1=requests.post(url,json=myobj,files=myfile)
+    for t in res1: print(t)
+    return {t} 

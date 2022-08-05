@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  webapp:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    # image: fastapi
+    container_name: app
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    environment:
+      - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    depends_on: 
+      - db
+    ports:
+    - "8008:8000"
+    # volumes:
+    #   -.:/app
+    restart: "always"
+  db:
+    image: postgres
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=fundacion_vet
+    volumes:
+      - psql_data:/var/lib/postgresql
+    
+    restart: "always"
+    container_name: db_post 
+volumes:
+  psql_data:  

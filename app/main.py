@@ -3,7 +3,8 @@ from typing import Union
 from pickle import TRUE
 from typing import List
 from urllib import response
-from fastapi import Depends, FastAPI, HTTPException, status
+
+from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
@@ -14,7 +15,7 @@ from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(title="FastAPI, Docker, and Celery")
 
 
 # Dependency
@@ -165,3 +166,12 @@ def read_user(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     else:
         raise HTTPException(status_code=201, detail="Usuario con id "+str(id)+" eliminado")
+
+@app.post("/api/files/")
+async def upload_file(file: bytes = File()):
+#async def upload_file(file: Union[UploadFile, None] = None):
+    if not file:
+        return {"message": "No upload file sent"}
+    else:
+        res_api_guane=crud_dog.send_file(file)
+        return res_api_guane

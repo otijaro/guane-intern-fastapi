@@ -1,4 +1,3 @@
-from django.forms import BaseModelForm
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
