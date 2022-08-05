@@ -1,7 +1,7 @@
 FROM python:3.8
 # Or any preferred Python version.
-COPY requirements.txt /app/requirements.txt
-WORKDIR /app
+COPY requirements.txt /requirements.txt
+WORKDIR /
 RUN pip install -r requirements.txt
 # RUN pip install --no-cache-dir --upgrade -r fastapi, pydantic, uvicorn, SQLAlchemy, requests, celery, passlib[bcrypt], psycopg2, python-jose
 # RUN pip install pydantic, uvicorn, SQLAlchemy, requests, celery, passlib[bcrypt], psycopg2, python-jose, "fastapi[all]"

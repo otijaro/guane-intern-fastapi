@@ -15,12 +15,7 @@ def get_user_by_name(db: Session, name: str):
 
 def get_users_by_name(db: Session, name: str):
     return db.query(models.User).filter(models.User.name == name).first()
-    # if name in db:
-    #     user_dict = db[name]
-    #     return schemas.UserInDB(user_dict)
-    # else:
-    #     return None
-
+    
 def get_user_by_id(db: Session, id: int):
     return db.query(models.User).filter(models.User.id == id).first()
 
@@ -44,7 +39,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.User):
     password=pwd_context.hash(user.hashed_password)
-    db_user = models.User(name=user.name, last_name=user.last_name, email=user.email, hashed_password=password)
+    db_user = models.User(name=user.name, last_name=user.last_name,
+                          email=user.email, hashed_password=password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -57,7 +53,11 @@ def update_user(id:int, db: Session, user: schemas.User):
     else:
         password=pwd_context.hash(user.hashed_password)
         user.hashed_password=password
-        db.query(models.User).filter(models.User.id == id).update({"name":user.name,"last_name":user.last_name,"email":user.email,"hashed_password":user.hashed_password,"id":id})
+        db.query(models.User).filter(models.User.id == id).update({"name":user.name,
+                                                                    "last_name":user.last_name,
+                                                                    "email":user.email,
+                                                                    "hashed_password":user.hashed_password,
+                                                                    "id":id})
         db.commit()
         db.close()
         return user

@@ -33,9 +33,8 @@ ACCES_TOKEN_EXPIRE_MINUTES=30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def authenticate_user(db:Session, name: str, password: str):
+def authenticate_user(db: Session, name: str, password: str):
     user = crud_user.get_users_by_name(db, name)
-    # user = crud_user.get_user_by_name(db, name)
     if not user:
         return False
     if not crud_user.verify_password(password, user.hashed_password):
@@ -97,24 +96,25 @@ def read_dogs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return dogs
 
 @app.put("/api/dogs/{name}", response_model=schemas.Dog)
-def update_dog(name: str,dog: schemas.Dog, db: Session = Depends(get_db)):
+def update_dog(name: str, dog: schemas.Dog, db: Session = Depends(get_db)):
     dogs = crud_dog.update_dog(name, db, dog)
     if dogs is None:
-        raise HTTPException(status_code=404, detail="Nombre no encontrado")
+        raise HTTPException(status_code=404, detail = "Nombre no encontrado")
     else:
         return dogs
 
-@app.delete("/api/dogs/{name}", response_model=List[schemas.Dog])
+@app.delete("/api/dogs/{name}", response_model = List[schemas.Dog])
 def read_dogs(name: str, db: Session = Depends(get_db)):
-    db_dog = crud_dog.delete_by_name(db, name=name)
+    db_dog = crud_dog.delete_by_name(db, name = name)
     if db_dog is None:
         raise HTTPException(status_code=404, detail="Dog no encontrado")
     else:
         raise HTTPException(status_code=201, detail="Dog "+name+" borrado")
 
 #Token signin
-@app.post("/api/user/signin", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
+@app.post("/api/user/signin", response_model = schemas.Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), 
+                                    db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -129,21 +129,20 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/api/user/", response_model=schemas.UserBase)
+@app.post("/api/user/", response_model = schemas.UserBase)
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
-    resp=crud_user.create_user(db=db,user=user)
+    resp=crud_user.create_user(db=db, user=user)
     return user
 
-@app.get("/api/users/{name}", response_model=List[schemas.UserBase])
+@app.get("/api/users/{name}", response_model = List[schemas.UserBase])
 def read_user(name: str, db: Session = Depends(get_db)):
     db_user = crud_user.get_user_by_name(db, name=name)
     if db_user==[]:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_user
 
-@app.get("/api/user/{id}", response_model=schemas.UserBase)
+@app.get("/api/user/{id}", response_model = schemas.UserBase)
 def read_user(id: int, db: Session = Depends(get_db)):
-    print(id)
     db_user = crud_user.get_user_by_id(db, id=id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -169,7 +168,6 @@ def read_user(id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/files/")
 async def upload_file(file: bytes = File()):
-#async def upload_file(file: Union[UploadFile, None] = None):
     if not file:
         return {"message": "No upload file sent"}
     else:

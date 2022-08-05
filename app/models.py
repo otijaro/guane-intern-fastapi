@@ -12,10 +12,9 @@ class Dog(Base):
     picture = Column(String)
     is_adopted = Column(Boolean, default=True)
     create_date= Column(DateTime)
-    #items = relationship("Item", back_populates="owner")
-
+    
     id_user =  Column(Integer, ForeignKey("users.id"))
-    owner= relationship("User",back_populates="dogs")
+    owner= relationship("User", back_populates="dogs")
 
 
 class User(Base):
@@ -23,7 +22,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    last_name = Column( String)
+    last_name = Column(String)
     email = Column(String)
     hashed_password= Column(String)
     dogs = relationship("Dog", back_populates="owner")
