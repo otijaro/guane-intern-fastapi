@@ -1,29 +1,29 @@
 version: '3.8'
 services:
-  webapp:
+  web:
     build:
       context: ./
       dockerfile: ./Dockerfile
-    # image: fastapi
-    container_name: app
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 127.0.0.1 --reload'
-    depends_on: 
+    image: fastapi
+    container_name: project_backend
+    # command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 127.0.0.1 --reload'
+    command: bash -c 'uvicorn app.main:app --host 127.0.0.1 --reload'
+    depends_on:
       - db
     ports:
-    - "8008:8000"
+    - "8000:8008"
     restart: "always"
   db:
     image: postgres
     expose:
       - 5432
     environment:
+      - POSTGRES_DB=fundacion_vet
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=fundacion_vet
     volumes:
       - psql_data:/var/lib/postgresql
-    
     restart: "always"
-    container_name: db_post 
+    container_name: db
 volumes:
   psql_data:  
