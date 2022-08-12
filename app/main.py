@@ -169,8 +169,8 @@ def read_user(id: int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=201, detail="Usuario con id "+str(id)+" eliminado")
 
-@app.post("/api/files/")
-async def upload_file(file: bytes = File()):
+@app.post("/api/files/", response_model="")
+async def upload_file(file: bytes = File(...)):
     if not file:
         return {"message": "No upload file sent"}
     else:

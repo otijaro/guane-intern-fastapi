@@ -7,12 +7,12 @@ services:
     image: fastapi
     container_name: project_backend
     # command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 127.0.0.1 --reload'
-    command: bash -c 'uvicorn app.main:app --host 127.0.0.1 --reload'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
     depends_on:
       - db
     ports:
-    - "8000:8008"
-    restart: "always"
+    - "8000:8000"
+    restart: "on-failure"
   db:
     image: postgres
     expose:
@@ -22,8 +22,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
     volumes:
-      - psql_data:/var/lib/postgresql
-    restart: "always"
+      - ./data/db:/var/lib/postgresql/14/main
+    restart: "on-failure"
     container_name: db
 volumes:
-  psql_data:  
+  psql_data:
+    driver: local
