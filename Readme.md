@@ -11,3 +11,4 @@ Después de hacer tal autenticación, se pueden ingresar los "dogs"
 Celery genera una tarea de demora de 3 segundos para la creación del dog, al ejecutarse muestra en consola tres veces un mensaje con el "dog" creado. 
 
 Desde el servicio Web se deben ingresar usuarios para poder luego ingresar los registros de la clase Dog, y adicionalmente, es importante hacer un registro de usuario (sign in) para poder hacer el registro de un nuevo "Dog".
+
