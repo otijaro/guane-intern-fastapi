@@ -19,7 +19,10 @@ def get_dog_by_name(db: Session, name: str):
     return db.query(models.Dog).filter(models.Dog.name == name).first()
 
 def get_dogs_by_name(db: Session, name: str):
-    return db.query(models.Dog).filter(models.Dog.name == name).all()
+    if (name=="is_adopted"):
+        return db.query(models.Dog).filter(models.Dog.is_adopted == "t").all()
+    else:
+        return db.query(models.Dog).filter(models.Dog.name == name).all()
 
 def get_dog_adopted(db: Session):
     return db.query(models.Dog).filter(models.Dog.is_adopted == "t").all()
@@ -29,7 +32,7 @@ def get_dogs(db: Session, skip: int = 0, limit: int = 100):
 
 def create_dog(db: Session, dog: schemas.DogCreate):
     for i in range(1, 4):
-        # sleep(1)
+        sleep(1)
         if not current_task:
             print("Creando Dog "+dog.name+"...")
         elif current_task.request.id is None:
@@ -82,5 +85,5 @@ def send_file(file: bytes):
     myobj = {'Content-Type': 'multipart/form-data','accept': 'application/json'}
     myfile={'file':file}
     res1=requests.post(url,json=myobj,files=myfile)
-    for t in res1: print(t)
+    for t in res1: c=1;
     return {t} 

@@ -18,7 +18,7 @@ from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="FastAPI, Docker, and Celery")
+app = FastAPI(title="FastAPI, Docker, and Celery Guane Enterprises S.A.S")
 
 
 # Dependency
@@ -73,6 +73,23 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session= Dep
         raise credentials_exception
     return user
 
+
+@app.post("/token", response_model=schemas.Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), 
+                                    db: Session = Depends(get_db)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.name}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
 #endpoints
 @app.post("/api/dogs/", response_model=schemas.Dog)
 async def create_dog(dog: schemas.Dog, db: Session = Depends(get_db),current_user:schemas.User = Depends(get_current_user)):
@@ -84,10 +101,14 @@ async def create_dog(dog: schemas.Dog, db: Session = Depends(get_db),current_use
 
 @app.get("/api/dogs/{name}", response_model=List[schemas.Dog])
 def read_dog(name: str, db: Session = Depends(get_db)):
-    if (name=="is_adopted"):
-        db_dog=crud_dog.get_dog_adopted(db)
-    else:
-        db_dog = crud_dog.get_dogs_by_name(db, name=name)
+    db_dog = crud_dog.get_dogs_by_name(db, name=name)
+    if db_dog is None:
+        raise HTTPException(status_code=404, detail="Nombre no encontrado")
+    return db_dog
+
+@app.get("/api/dogs/is_adopted", response_model=List[schemas.Dog])
+def read_dog_adopted(db: Session = Depends(get_db)):
+    db_dog=crud_dog.get_dog_adopted(db)
     if db_dog is None:
         raise HTTPException(status_code=404, detail="Nombre no encontrado")
     return db_dog
